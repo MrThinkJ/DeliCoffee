@@ -12,6 +12,6 @@ public class TestDrink {
 //        drinkService.addDrink(drink);
 //        drinkService.updateDrink(1, 40000, "Nuoc Cam Update2");
 //        drinkService.deleteDrink(2);
-        drinkService.getAllDrink();
+//        drinkService.getAllDrink();
     }
 }

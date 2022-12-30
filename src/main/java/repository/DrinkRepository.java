@@ -6,19 +6,20 @@ package repository;
 
 import java.util.List;
 import entity.Drink;
-import daoconfig.Config;
+import daoconfig.DrinkDatabaseConfig;
 
 /**
  *
  * @author ACER
  */
 public interface DrinkRepository {
-    List<Drink> drinkList = Config.dataSource();
-    public void addDrink(Drink drink);
+    List<Drink> drinkList = DrinkDatabaseConfig.dataSource();
+    int getMaxId();
+    void addDrink(int price, String name);
     
-    public void updateDrink(int id, int price, String name);
+    void updateDrink(int id, int price, String name);
     
-    public void deleteDrink(int id);
+    void deleteDrink(int id);
     
-    public void getAllDrink();
+    void getAllDrink();
 }

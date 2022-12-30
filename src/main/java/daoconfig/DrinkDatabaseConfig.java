@@ -16,7 +16,7 @@ import java.util.Scanner;
  *
  * @author ACER
  */
-public class Config {
+public class DrinkDatabaseConfig {
     public static List<Drink> dataSource(){
         List<Drink> drinkList = new ArrayList<>();
         try{

@@ -4,7 +4,8 @@
  */
 package service;
 
-import daoconfig.Config;
+import daoconfig.DrinkDatabaseConfig;
+import entity.Account;
 import entity.Drink;
 import repository.DrinkRepository;
 
@@ -15,15 +16,28 @@ import repository.DrinkRepository;
 public class DrinkService implements DrinkRepository{
 
     @Override
-    public void addDrink(Drink drink){
+    public int getMaxId() {
+        int maxId = 1;
+        for (Drink drink : drinkList)
+            if (drink.getId()>=maxId)
+                maxId = drink.getId();
+        return maxId;
+    }
+
+    @Override
+    public void addDrink(int price, String name){
+        Drink drink = new Drink();
+        drink.setId(getMaxId()+1);
+        drink.setPrice(price);
+        drink.setName(name);
         drinkList.add(drink);
-        Config.changeDrinkDatabase(drinkList);
+        DrinkDatabaseConfig.changeDrinkDatabase(drinkList);
     }
     @Override
     public void updateDrink(int id, int price, String name){
         drinkList.get(id-1).setName(name);
         drinkList.get(id-1).setPrice(price);
-        Config.changeDrinkDatabase(drinkList);
+        DrinkDatabaseConfig.changeDrinkDatabase(drinkList);
     }
     @Override
     public void deleteDrink(int id){
@@ -31,7 +45,7 @@ public class DrinkService implements DrinkRepository{
         for (int i=id-1;i<drinkList.size();i++){
             drinkList.get(i).setId(drinkList.get(i).getId()-1);
         }
-        Config.changeDrinkDatabase(drinkList);
+        DrinkDatabaseConfig.changeDrinkDatabase(drinkList);
     }
     @Override
     public void getAllDrink(){
