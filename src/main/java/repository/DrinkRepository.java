@@ -21,5 +21,5 @@ public interface DrinkRepository {
     
     void deleteDrink(int id);
     
-    void getAllDrink();
+    List<Drink> getAllDrink();
 }

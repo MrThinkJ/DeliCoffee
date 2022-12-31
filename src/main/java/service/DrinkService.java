@@ -7,6 +7,7 @@ package service;
 import daoconfig.DrinkDatabaseConfig;
 import entity.Account;
 import entity.Drink;
+import java.util.List;
 import repository.DrinkRepository;
 
 /**
@@ -48,9 +49,8 @@ public class DrinkService implements DrinkRepository{
         DrinkDatabaseConfig.changeDrinkDatabase(drinkList);
     }
     @Override
-    public void getAllDrink(){
-        for (Drink drink : drinkList)
-            System.out.println(drink.toString());
+    public List<Drink> getAllDrink(){
+        return drinkList;
     }
     
 }
