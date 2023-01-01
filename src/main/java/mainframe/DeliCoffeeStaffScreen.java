@@ -173,7 +173,6 @@ public class DeliCoffeeStaffScreen extends javax.swing.JFrame {
 
     private void orderDrinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_orderDrinkActionPerformed
         if (orderDrinkPanel == null){
-            System.out.println("cretae");
             orderDrinkPanel = new OrderDrinkPanel();
         }
         jPanel6.add(orderDrinkPanel);

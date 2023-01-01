@@ -32,9 +32,6 @@ public class DeliCoffeeLoginScreen extends javax.swing.JFrame {
         colorList.add(Color.PINK);
     }
     final Random r=new Random();
-    /**
-     * Creates new form DeliCoffeeLoginScreen
-     */
     public DeliCoffeeLoginScreen() {
         initComponents();
         initTimer(inforText);

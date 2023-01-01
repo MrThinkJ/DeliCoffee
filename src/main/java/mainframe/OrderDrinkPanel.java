@@ -4,10 +4,14 @@
  */
 package mainframe;
 
+import entity.Bill;
 import entity.Drink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import service.DrinkService;
+import service.OrderService;
 
 /**
  *
@@ -16,10 +20,14 @@ import service.DrinkService;
 public class OrderDrinkPanel extends javax.swing.JPanel {
     List<Drink> drinkList = new ArrayList<>();
     DrinkService drinkService = new DrinkService();
+    OrderService orderService = new OrderService();
+    List<Bill> billList = orderService.getBillList();
+    DefaultTableModel tblModel;
     /**
      * Creates new form OrderDrinkPanel
      */
     public OrderDrinkPanel() {
+        initTable();
         initComponents();
         drinkList = drinkService.getAllDrink();
         showDrinkComboBox();
@@ -29,6 +37,28 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
         for (Drink drink: drinkList)
             drinkCombobox.addItem(drink.getName());
         setPrice(String.valueOf(drinkList.get(0).getPrice()));
+    }
+    public void initTable(){
+        tblModel = new DefaultTableModel();
+        tblModel.setColumnIdentifiers(new String[]{"Tên", "Giá", "Số Lượng", "Tổng"});
+    }
+    public void removeDataFromTable(){
+        tblModel.setNumRows(0);
+    }
+    public void loadDataToTable(){
+        for (Bill bill : billList){
+            tblModel.addRow(new Object[]{bill.getDrinkName(), bill.getDrinkPrice(), bill.getDrinkQuantity(), bill.getTotalPrice()});
+        }
+        tblModel.fireTableDataChanged();
+    }
+    public void reloadTable(){
+        int totalPrice = 0;
+        for (Bill bill : billList){
+            totalPrice+=bill.getTotalPrice();
+        }
+        totalPriceLabel.setText(String.valueOf(totalPrice));
+        removeDataFromTable();
+        loadDataToTable();
     }
     public void setPrice(String price){
         priceLabel.setText(price);
@@ -49,21 +79,25 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
         priceLabel = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        billTable = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
         tableCombobox = new javax.swing.JComboBox<>();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        totalPriceLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jButton5 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
+
+        quantityLabel.setText("1");
 
         drinkCombobox.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         drinkCombobox.setBorder(null);
@@ -83,26 +117,8 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Số lượng: ");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Tên", "Giá", "Số Lượng"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(jTable1);
+        billTable.setModel(tblModel);
+        jScrollPane1.setViewportView(billTable);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Bàn:");
@@ -121,9 +137,11 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Tổng Tiền");
 
+        totalPriceLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+
         jPanel1.setBackground(new java.awt.Color(255, 153, 51));
 
-        jButton5.setText("+");
+        jButton5.setText("-");
         jButton5.setAlignmentY(0.0F);
         jButton5.setBorder(null);
         jButton5.setContentAreaFilled(false);
@@ -150,7 +168,7 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
 
         jPanel2.setBackground(new java.awt.Color(255, 153, 51));
 
-        jButton3.setText("-");
+        jButton3.setText("+");
         jButton3.setAlignmentY(0.0F);
         jButton3.setBorder(null);
         jButton3.setContentAreaFilled(false);
@@ -182,6 +200,11 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
         jButton1.setText("Thêm");
         jButton1.setBorder(null);
         jButton1.setContentAreaFilled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -196,6 +219,29 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel4.setBackground(new java.awt.Color(255, 102, 0));
+
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setText("Thanh Toán");
+        jButton2.setBorder(null);
+        jButton2.setContentAreaFilled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -225,10 +271,12 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(96, 96, 96)
-                                .addComponent(jLabel7)))
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(totalPriceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(157, 157, 157)
@@ -244,7 +292,7 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(0, 51, Short.MAX_VALUE)))
                         .addGap(83, 83, 83))))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -254,16 +302,15 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(drinkCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4))
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(drinkCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
                     .addComponent(quantityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -290,9 +337,11 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
                         .addComponent(jLabel6)
                         .addComponent(tableCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(16, 16, 16)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(totalPriceLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
+                        .addGap(42, 42, 42)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(21, 21, 21)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -300,7 +349,11 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void drinkComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drinkComboboxActionPerformed
-
+        int index = drinkCombobox.getSelectedIndex();
+        if (index >=0){
+            priceLabel.setText(String.valueOf(drinkList.get(index).getPrice()));
+        }
+        quantityLabel.setText("1");
     }//GEN-LAST:event_drinkComboboxActionPerformed
 
     private void tableComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableComboboxActionPerformed
@@ -308,17 +361,44 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_tableComboboxActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+        if (Integer.parseInt(quantityLabel.getText()) == 1)
+            return;
+        int quantityMinus = Integer.parseInt(quantityLabel.getText())-1;
+        int index = drinkCombobox.getSelectedIndex();
+        int price = drinkList.get(index).getPrice();
+        int multiplePrice = price*quantityMinus;
+        quantityLabel.setText(String.valueOf(quantityMinus));
+        priceLabel.setText(String.valueOf(multiplePrice));
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        int quantityPlus = Integer.parseInt(quantityLabel.getText())+1;
+        int index = drinkCombobox.getSelectedIndex();
+        int price = drinkList.get(index).getPrice();
+        int multiplePrice = price*quantityPlus;
+        quantityLabel.setText(String.valueOf(quantityPlus));
+        priceLabel.setText(String.valueOf(multiplePrice));
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String drinkName = drinkList.get(drinkCombobox.getSelectedIndex()).getName();
+        int drinkPrice = Integer.parseInt(priceLabel.getText());
+        int drinkQuantity = Integer.parseInt(quantityLabel.getText());
+        orderService.addBill(drinkName, drinkPrice, drinkQuantity);
+        quantityLabel.setText("1");
+        reloadTable();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable billTable;
     private javax.swing.JComboBox<String> drinkCombobox;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
@@ -326,16 +406,16 @@ public class OrderDrinkPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel priceLabel;
     private javax.swing.JLabel quantityLabel;
     private javax.swing.JComboBox<String> tableCombobox;
+    private javax.swing.JLabel totalPriceLabel;
     // End of variables declaration//GEN-END:variables
 }

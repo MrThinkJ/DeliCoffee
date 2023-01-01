@@ -14,7 +14,6 @@ public class AccountService implements AccountRepository {
         }
         return null;
     }
-
     @Override
     public int getMaxId() {
         int maxId = 1;
