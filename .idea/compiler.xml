@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <excludeFromCompile>
+      <directory url="file://$USER_HOME$/Desktop" includeSubdirectories="true" />
+      <file url="file://$PROJECT_DIR$/src/main/java/mainframe/OrderPanel.form" />
+      <file url="file://$PROJECT_DIR$/src/main/java/mainframe/TablePanel.form" />
+      <file url="file://$PROJECT_DIR$/src/main/java/mainframe/DeliCoffeeStaffScreen.form" />
+      <file url="file://$PROJECT_DIR$/src/main/java/mainframe/DeliCoffeeLoginScreen.form" />
+      <file url="file://$PROJECT_DIR$/src/main/java/mainframe/DeliCoffeeAdminScreen.form" />
+    </excludeFromCompile>
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="DeliCoffee" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
